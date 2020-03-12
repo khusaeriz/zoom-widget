@@ -15,6 +15,7 @@ class Zoom extends StatefulWidget {
   final Color colorScrollBars;
   final bool centerOnScale;
   final double initZoom;
+  final double maxScale;
   final bool enableScroll;
   final double zoomSensibility;
   final bool doubleTapZoom;
@@ -33,6 +34,7 @@ class Zoom extends StatefulWidget {
       this.colorScrollBars = Colors.black,
       this.centerOnScale = true,
       this.initZoom = 1.0,
+      this.maxScale = 1.0,
       this.enableScroll = true,
       this.zoomSensibility = 1.0,
       this.doubleTapZoom = true})
@@ -362,7 +364,7 @@ class _ZoomState extends State<Zoom> with TickerProviderStateMixin {
                       if (details.scale > changeScale) {
                         double preScale = scale +
                             (details.scale - changeScale) / widget.zoomSensibility;
-                        if (preScale < 1.0) {
+                        if (preScale < widget.maxScale) {
                           scale = preScale;
                         }
                       } else if (changeScale > details.scale &&
@@ -371,6 +373,11 @@ class _ZoomState extends State<Zoom> with TickerProviderStateMixin {
                         double preScale = scale -
                             (changeScale - details.scale) / widget.zoomSensibility;
 
+                        if (preScale > 1) {
+                          preScale = scale -
+                            (changeScale - details.scale) / 
+                            widget.zoomSensibility * 3; // multiply zoomSensibility for faster zoom
+                        }
                         if (portrait) {
                           if (preScale > (constraints.maxWidth / widget.width)) {
                             scale = preScale;
